@@ -1,7 +1,6 @@
 package sbp.school.kafka;
 
-public class Main {
+public class ProducerRunner {
     public static void main(String[] args) {
-
     }
 }
