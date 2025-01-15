@@ -30,8 +30,9 @@ public class TransactionJsonSerializer implements Serializer<Transaction> {
                 return objectMapper.writeValueAsString(transaction).getBytes(StandardCharsets.UTF_8);
             }
         } catch (JsonProcessingException e) {
+            log.error("Error serialize", e);
             throw new RuntimeException(e);
         }
-        return null;
+        return new byte[0];
     }
 }
