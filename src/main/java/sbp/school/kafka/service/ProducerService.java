@@ -3,7 +3,7 @@ package sbp.school.kafka.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import sbp.school.kafka.config.KafkaConfig;
+import sbp.school.kafka.config.ProducerConfig;
 import sbp.school.kafka.entity.Transaction;
 
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class ProducerService {
 
     public void send(Transaction transaction, String topic) {
         log.info("Send transaction. Topic name: {}", topic);
-        try (KafkaProducer<String, Transaction> producer = new KafkaProducer<>(KafkaConfig.getKafkaProperties())) {
+        try (KafkaProducer<String, Transaction> producer = new KafkaProducer<>(ProducerConfig.getProducerProperties())) {
             producer.send(new ProducerRecord<>(topic, transaction.getOperationType().name(), transaction),
                     ((recordMetadata, e) -> {
                         if (Objects.nonNull(e)) {

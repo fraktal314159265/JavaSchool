@@ -12,22 +12,22 @@ import static org.apache.kafka.clients.producer.ProducerConfig.PARTITIONER_CLASS
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 
 /**
- * Конфигурационный класс для получения параметров конфигурации Кафка
+ * Конфигурационный класс для получения параметров конфигурации Kafka#Producer
  */
 
 @Slf4j
-public class KafkaConfig {
+public class ProducerConfig {
     private static final Properties properties = new Properties();
 
     static {
-        loadKafkaProperties();
+        loadProducerProperties();
     }
 
-    public static Properties getKafkaProperties() {
+    public static Properties getProducerProperties() {
         return properties;
     }
-    private static void loadKafkaProperties() {
-        log.info("Init KafkaConfig");
+    private static void loadProducerProperties() {
+        log.info("Init ProducerConfig");
 
         properties.put(BOOTSTRAP_SERVERS_CONFIG, PropertiesUtil.get(BOOTSTRAP_SERVERS_CONFIG));
         properties.put(KEY_SERIALIZER_CLASS_CONFIG, PropertiesUtil.get(KEY_SERIALIZER_CLASS_CONFIG));

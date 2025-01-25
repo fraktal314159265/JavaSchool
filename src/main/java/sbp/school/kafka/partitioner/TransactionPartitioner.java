@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
+import sbp.school.kafka.entity.OperationType;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class TransactionPartitioner implements Partitioner {
         }
         int hash = key.hashCode();
         int partition = Math.abs(hash % numPartitions);
-        log.debug("key = {}, keyBytes = {}, partition = {}", key, keyBytes, partition);
-        return partition;
+        log.info("hash = {} , key = {}, keyBytes = {}, partition = {}", hash, key, keyBytes, partition);
+        return OperationType.valueOf(key.toString()).ordinal();
     }
 
     @Override

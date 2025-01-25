@@ -13,6 +13,8 @@ import java.util.Properties;
 @UtilityClass
 @Slf4j
 public class PropertiesUtil {
+    public static final String TOPICS_NAME_PROPERTY = "topic.demo";
+    public static final String BATCH_SIZE_PROPERTY = "batch.size";
     private static final Properties PROPERTIES = new Properties();
 
     static {
@@ -27,6 +29,7 @@ public class PropertiesUtil {
         log.info("Load properties");
         try (var inputStream = PropertiesUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
             PROPERTIES.load(inputStream);
+            System.out.println(PROPERTIES);
         } catch (IOException e) {
             log.error("Error load properties", e);
             throw new RuntimeException(e);
