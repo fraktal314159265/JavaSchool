@@ -1,5 +1,6 @@
 package sbp.school.kafka.service.consumer;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -7,7 +8,9 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import sbp.school.kafka.config.ConsumerConfig;
+import sbp.school.kafka.entity.ProcessedTransaction;
 import sbp.school.kafka.entity.Transaction;
+import sbp.school.kafka.repository.ProcessedTransactionRepository;
 import sbp.school.kafka.util.PropertiesUtil;
 
 import java.time.Duration;
@@ -22,13 +25,11 @@ import static sbp.school.kafka.util.PropertiesUtil.BATCH_SIZE_PROPERTY;
 import static sbp.school.kafka.util.PropertiesUtil.TOPICS_DEMO_PROPERTY;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ConsumerService {
     private final Map<TopicPartition, OffsetAndMetadata> currentOffset = new HashMap<>();
     private long counter = 0L;
-
-    public ConsumerService() {
-
-    }
+    private final ProcessedTransactionRepository processedTransactionRepository;
 
     /**
      * При первом вызове метода pool, он отвечает за поиск координатора группы, за присоединение потребителя к группе,
@@ -64,6 +65,9 @@ public class ConsumerService {
                             key,
                             message
                     );
+                    processedTransactionRepository.save(ProcessedTransaction.builder()
+                            .transaction(message)
+                            .build());
 
                     currentOffset.put(new TopicPartition(topic, partition), new OffsetAndMetadata(offset + 1));
 

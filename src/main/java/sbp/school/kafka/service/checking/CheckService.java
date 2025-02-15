@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import sbp.school.kafka.config.CheckConfig;
+import sbp.school.kafka.config.CheckConsumerConfig;
 import sbp.school.kafka.entity.Check;
 import sbp.school.kafka.entity.Transaction;
 import sbp.school.kafka.repository.TransactionRepository;
@@ -36,7 +36,7 @@ public class CheckService {
      *
      */
     public void read() {
-        try (KafkaConsumer<String, Check> consumer = new KafkaConsumer<>(CheckConfig.getCheckProperties())) {
+        try (KafkaConsumer<String, Check> consumer = new KafkaConsumer<>(CheckConsumerConfig.getCheckProperties())) {
             consumer.subscribe(Collections.singleton(PropertiesUtil.get(TOPIC_CHECK_PROPERTY)));
 
             while (true) {
