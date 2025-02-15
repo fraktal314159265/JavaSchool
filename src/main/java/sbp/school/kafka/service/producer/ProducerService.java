@@ -1,4 +1,4 @@
-package sbp.school.kafka.service;
+package sbp.school.kafka.service.producer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;

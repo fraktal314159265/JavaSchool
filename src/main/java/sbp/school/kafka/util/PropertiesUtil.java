@@ -13,7 +13,10 @@ import java.util.Properties;
 @UtilityClass
 @Slf4j
 public class PropertiesUtil {
-    public static final String TOPICS_NAME_PROPERTY = "topic.demo";
+    public static final String TOPICS_DEMO_PROPERTY = "topic.demo";
+    public static final String TOPIC_CHECK_PROPERTY = "check.topic";
+    public static final String INTERVAL = "interval";
+    public static final String DELAY = "delay";
     public static final String BATCH_SIZE_PROPERTY = "batch.size";
     private static final Properties PROPERTIES = new Properties();
 

@@ -10,7 +10,7 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 /**
- * Модель Операция.
+ * Модель для проверки обработки сообщений.
  */
 
 @AllArgsConstructor
@@ -19,10 +19,7 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @ToString
-public class Transaction {
-    private Long id;
-    private OperationType operationType;
-    private Double amount;
-    private String account;
-    private OffsetDateTime date;
+public class Check {
+    private OffsetDateTime offsetDateTime;
+    private int hashSumma;
 }
