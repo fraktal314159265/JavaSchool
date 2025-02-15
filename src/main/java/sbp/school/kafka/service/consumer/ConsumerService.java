@@ -1,4 +1,4 @@
-package sbp.school.kafka.service;
+package sbp.school.kafka.service.consumer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static sbp.school.kafka.util.PropertiesUtil.BATCH_SIZE_PROPERTY;
-import static sbp.school.kafka.util.PropertiesUtil.TOPICS_NAME_PROPERTY;
+import static sbp.school.kafka.util.PropertiesUtil.TOPICS_DEMO_PROPERTY;
 
 @Slf4j
 public class ConsumerService {
@@ -92,7 +92,7 @@ public class ConsumerService {
 
 
     private List<String> getTopics() {
-        return Arrays.stream(PropertiesUtil.get(TOPICS_NAME_PROPERTY).split(";"))
+        return Arrays.stream(PropertiesUtil.get(TOPICS_DEMO_PROPERTY).split(";"))
                 .map(String::trim)
                 .collect(Collectors.toList());
     }
