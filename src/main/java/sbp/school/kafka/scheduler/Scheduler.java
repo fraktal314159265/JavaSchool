@@ -3,6 +3,7 @@ package sbp.school.kafka.scheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import sbp.school.kafka.config.CheckProducerConfig;
 import sbp.school.kafka.entity.Check;
 import sbp.school.kafka.repository.ProcessedTransactionRepository;
@@ -31,19 +32,14 @@ public class Scheduler {
         Runnable task = () -> {
             try (KafkaProducer<String, Check> producer = new KafkaProducer<>(CheckProducerConfig.getProducerProperties())) {
                 OffsetDateTime now = OffsetDateTime.now();
-                int hashSumma = getHashSumma(now);
+                long hashSumma = getHashSumma(now);
 
                 Check check = Check.builder()
                         .offsetDateTime(now)
                         .hashSumma(hashSumma)
                         .build();
 
-                producer.send(new ProducerRecord<>(PropertiesUtil.get(TOPIC_CHECK_PROPERTY), check), ((recordMetadata, e) -> {
-                    if (Objects.nonNull(e)) {
-                        log.error("Offset: {}, Partition: {}", recordMetadata.offset(), recordMetadata.partition());
-                        throw new RuntimeException(e);
-                    }
-                }));
+                producer.send(new ProducerRecord<>(PropertiesUtil.get(TOPIC_CHECK_PROPERTY), check), (Scheduler::handle));
 
             }
         };
@@ -51,14 +47,21 @@ public class Scheduler {
         scheduler.scheduleAtFixedRate(task, 0, Long.parseLong(PropertiesUtil.get(INTERVAL)), TimeUnit.SECONDS);
     }
 
-    private static int getHashSumma(OffsetDateTime now) {
+    private static long getHashSumma(OffsetDateTime now) {
         return repository.findProcessedTransactionByInterval(
                         now,
                         Long.parseLong(PropertiesUtil.get(INTERVAL)),
                         Long.parseLong(PropertiesUtil.get(DELAY)))
                 .stream()
                 .map(it -> it.getTransaction().getId().hashCode())
-                .reduce(0, Integer::sum);
+                .mapToLong(Integer::longValue)
+                .sum();
     }
 
+    private static void handle(RecordMetadata recordMetadata, Exception e) {
+        if (Objects.nonNull(e)) {
+            log.error("Offset: {}, Partition: {}", recordMetadata.offset(), recordMetadata.partition());
+            throw new RuntimeException(e);
+        }
+    }
 }
