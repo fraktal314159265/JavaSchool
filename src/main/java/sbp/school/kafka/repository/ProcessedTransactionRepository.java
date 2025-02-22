@@ -20,6 +20,10 @@ public class ProcessedTransactionRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<ProcessedTransaction> getProcessedTransactions() {
+        return PROCESSED_TRANSACTIONS_DB;
+    }
+
     public void save(ProcessedTransaction processedTransaction) {
         PROCESSED_TRANSACTIONS_DB.add(processedTransaction);
     }
