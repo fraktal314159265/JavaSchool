@@ -14,7 +14,7 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
  * Конфигурационный класс для получения параметров конфигурации Kafka#Check
  */
 @Slf4j
-public class CheckConfig {
+public class CheckConsumerConfig {
     private static final String CHECK = "check.";
     private static final Properties properties = new Properties();
 

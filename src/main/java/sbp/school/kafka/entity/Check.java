@@ -21,5 +21,5 @@ import java.time.OffsetDateTime;
 @ToString
 public class Check {
     private OffsetDateTime offsetDateTime;
-    private int hashSumma;
+    private long hashSumma;
 }

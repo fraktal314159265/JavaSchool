@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import sbp.school.kafka.config.CheckConfig;
+import sbp.school.kafka.config.CheckConsumerConfig;
 import sbp.school.kafka.entity.Check;
 import sbp.school.kafka.entity.Transaction;
 import sbp.school.kafka.repository.TransactionRepository;
@@ -33,10 +33,9 @@ public class CheckService {
      * Читает топик, в который consumer#ConsumerService кладёт время обработки транзакций и их хеш-сумму.
      * Параметр interval определяет, за сколько минут были обработаны сообщения
      * Параметр delay определяет возможную задержку
-     *
      */
     public void read() {
-        try (KafkaConsumer<String, Check> consumer = new KafkaConsumer<>(CheckConfig.getCheckProperties())) {
+        try (KafkaConsumer<String, Check> consumer = new KafkaConsumer<>(CheckConsumerConfig.getCheckProperties())) {
             consumer.subscribe(Collections.singleton(PropertiesUtil.get(TOPIC_CHECK_PROPERTY)));
 
             while (true) {
@@ -62,16 +61,17 @@ public class CheckService {
 
     private void check(Check check) {
         OffsetDateTime dateTime = check.getOffsetDateTime();
-        int hashSumma = check.getHashSumma();
+        long hashSumma = check.getHashSumma();
 
         List<Transaction> transactionList = transactionRepository.findTransactionByInterval(
                 dateTime,
                 Long.parseLong(PropertiesUtil.get(INTERVAL)),
                 Long.parseLong(PropertiesUtil.get(DELAY)));
 
-        int checkHash = transactionList.stream()
+        long checkHash = transactionList.stream()
                 .map(transaction -> transaction.getId().hashCode())
-                .reduce(0, Integer::sum);
+                .mapToLong(Integer::longValue)
+                .sum();
 
         log.info("checkHash: {}", checkHash);
 
