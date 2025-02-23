@@ -18,6 +18,11 @@ public class PropertiesUtil {
     public static final String INTERVAL = "interval";
     public static final String DELAY = "delay";
     public static final String BATCH_SIZE_PROPERTY = "batch.size";
+    public static final String DB_URL = "db.url";
+    public static final String DB_USER = "db.user";
+    public static final String DB_PASSWORD = "db.password";
+    public static final String TABLE_NAME = "table.name";
+    public static final String TOPIC_CONFIG = "topic.config";
     private static final Properties PROPERTIES = new Properties();
 
     static {
