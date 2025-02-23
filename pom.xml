@@ -24,7 +24,16 @@
             <artifactId>kafka-clients</artifactId>
             <version>3.9.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-json</artifactId>
+            <version>3.9.0</version>
+        </dependency>
         <!--        JSON-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -60,7 +69,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.10.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

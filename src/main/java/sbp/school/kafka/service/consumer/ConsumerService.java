@@ -1,13 +1,14 @@
 package sbp.school.kafka.service.consumer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import sbp.school.kafka.config.ConsumerConfig;
+import sbp.school.kafka.entity.ProcessedTransaction;
 import sbp.school.kafka.entity.Transaction;
+import sbp.school.kafka.repository.ProcessedTransactionRepository;
 import sbp.school.kafka.util.PropertiesUtil;
 
 import java.time.Duration;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,11 +25,14 @@ import static sbp.school.kafka.util.PropertiesUtil.TOPICS_DEMO_PROPERTY;
 
 @Slf4j
 public class ConsumerService {
-    private final Map<TopicPartition, OffsetAndMetadata> currentOffset = new HashMap<>();
+    private final Map<TopicPartition, OffsetAndMetadata> currentOffset = new HashMap<>();;
     private long counter = 0L;
+    private final ProcessedTransactionRepository processedTransactionRepository;
+    private Consumer<String, Transaction> consumer;
 
-    public ConsumerService() {
-
+    public ConsumerService(ProcessedTransactionRepository processedTransactionRepository, Consumer<String, Transaction> consumer) {
+        this.processedTransactionRepository = processedTransactionRepository;
+        this.consumer = consumer;
     }
 
     /**
@@ -39,15 +44,15 @@ public class ConsumerService {
      * делать в отдельном потоке, чтобы регулярность отправки heartbeats не нарушалась.
      */
     public void read() {
-        KafkaConsumer<String, Transaction> consumer = null;
         String topic = null;
         long offset = -1;
         int partition = -1;
         String key = null;
         Transaction message = null;
         try {
-            consumer = new KafkaConsumer<>(ConsumerConfig.getConsumerProperties());
-            consumer.subscribe(getTopics());
+            if (consumer.assignment().isEmpty()) {
+                consumer.subscribe(getTopics());
+            }
 
             while (true) {
                 ConsumerRecords<String, Transaction> records = consumer.poll(Duration.ofMillis(300));
@@ -64,6 +69,9 @@ public class ConsumerService {
                             key,
                             message
                     );
+                    processedTransactionRepository.save(ProcessedTransaction.builder()
+                            .transaction(message)
+                            .build());
 
                     currentOffset.put(new TopicPartition(topic, partition), new OffsetAndMetadata(offset + 1));
 
@@ -80,12 +88,14 @@ public class ConsumerService {
                     offset,
                     partition,
                     key,
-                    message);
+                    message, e);
         } finally {
             try {
                 Optional.ofNullable(consumer).ifPresent(it -> it.commitSync(currentOffset));
             } finally {
-                Optional.ofNullable(consumer).ifPresent(KafkaConsumer::close);
+                if(Objects.nonNull(consumer)) {
+                    consumer.close();
+                }
             }
         }
     }
